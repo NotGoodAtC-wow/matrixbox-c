@@ -10,7 +10,7 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# библиотека
+# library
 add_library(matrixlab STATIC
         src/matrix.c
         include/matrix.h
@@ -19,11 +19,11 @@ add_library(matrixlab STATIC
 )
 target_include_directories(matrixlab PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# демка
+# demo
 add_executable(matrixlab_demo src/main.c)
 target_link_libraries(matrixlab_demo PRIVATE matrixlab)
 
-# тесты
+# tests
 enable_testing()
 add_executable(test_matrix tests/test_matrix.c
         tests/test_matrix.c)
@@ -33,7 +33,7 @@ add_executable(test_ops tests/test_ops.c
         tests/test_ops.c)
 target_link_libraries(test_ops PRIVATE matrixlab)
 add_test(NAME test_ops COMMAND test_ops)
-#linuxproof
+# linuxproof
 if(UNIX AND NOT APPLE)
     target_link_libraries(test_matrix PRIVATE m)
     target_link_libraries(test_ops    PRIVATE m)
@@ -44,3 +44,6 @@ if(UNIX AND NOT APPLE)
     target_link_libraries(test_ops    PRIVATE m)
     target_link_libraries(matrixlab_demo PRIVATE m)
 endif()
+# optimized for C99
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_EXTENSIONS OFF)
