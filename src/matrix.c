@@ -42,3 +42,34 @@ void mat_fill(Matrix* m, double v) {
         m->data[k] = v;
     }
 }
+// v1 after
+static int _valid(const Matrix* m) {
+    return m && m->data && m->rows > 0 && m->cols > 0;
+}
+
+int mat_add(const Matrix* A, const Matrix* B, Matrix* C) {
+    if (!_valid(A) || !_valid(B) || !_valid(C)) return -1;
+    if (A->rows != B->rows || A->cols != B->cols) return -2;
+    if (C->rows != A->rows || C->cols != A->cols) return -3;
+    size_t n = (size_t)A->rows * A->cols;
+    for (size_t k = 0; k < n; ++k) C->data[k] = A->data[k] + B->data[k];
+    return 0;
+}
+
+int mat_sub(const Matrix* A, const Matrix* B, Matrix* C) {
+    if (!_valid(A) || !_valid(B) || !_valid(C)) return -1;
+    if (A->rows != B->rows || A->cols != B->cols) return -2;
+    if (C->rows != A->rows || C->cols != A->cols) return -3;
+    size_t n = (size_t)A->rows * A->cols;
+    for (size_t k = 0; k < n; ++k) C->data[k] = A->data[k] - B->data[k];
+    return 0;
+}
+
+int mat_transpose(const Matrix* A, Matrix* T) {
+    if (!_valid(A) || !_valid(T)) return -1;
+    if (T->rows != A->cols || T->cols != A->rows) return -3;
+    for (size_t i = 0; i < A->rows; ++i)
+        for (size_t j = 0; j < A->cols; ++j)
+            T->data[j * T->cols + i] = A->data[i * A->cols + j];
+    return 0;
+}

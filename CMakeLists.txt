@@ -29,3 +29,7 @@ add_executable(test_matrix tests/test_matrix.c
         tests/test_matrix.c)
 target_link_libraries(test_matrix PRIVATE matrixlab)
 add_test(NAME test_matrix COMMAND test_matrix)
+add_executable(test_ops tests/test_ops.c
+        tests/test_ops.c)
+target_link_libraries(test_ops PRIVATE matrixlab)
+add_test(NAME test_ops COMMAND test_ops)

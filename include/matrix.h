@@ -25,4 +25,8 @@ void mat_set(Matrix* m, size_t i, size_t j, double v);
 /* заполнить константой */
 void mat_fill(Matrix* m, double v);
 
+int mat_add(const Matrix* A, const Matrix* B, Matrix* C);        // C = A + B
+int mat_sub(const Matrix* A, const Matrix* B, Matrix* C);        // C = A - B
+int mat_transpose(const Matrix* A, Matrix* T);                   // T = A^T
+
 #endif
