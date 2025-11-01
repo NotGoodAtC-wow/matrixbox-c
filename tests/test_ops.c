@@ -1,8 +1,12 @@
 #include <assert.h>
-#include <math.h>
 #include "matrix.h"
 
-static int deq(double a, double b) { return fabs(a - b) < 1e-9; }
+// простая абсолютная разность без <math.h>
+static int deq(double a, double b) {
+    double d = a - b;
+    if (d < 0) d = -d;
+    return d < 1e-9;
+}
 
 int main(void) {
     // A (2x3)
@@ -29,13 +33,12 @@ int main(void) {
     for (size_t i=0;i<2;i++) for (size_t j=0;j<3;j++)
         assert(deq(mat_get(&D,i,j), sub_expected[i*3+j]));
 
-    // T = A^T  (3x2)
+    // T = A^T (3x2)
     Matrix T; assert(mat_create(&T, 3, 2) == 0);
     assert(mat_transpose(&A,&T) == 0);
-    // проверим несколько позиций
-    assert(deq(mat_get(&T,0,0), 1)); // A(0,0)
-    assert(deq(mat_get(&T,1,0), 2)); // A(0,1)
-    assert(deq(mat_get(&T,2,1), 6)); // A(1,2)
+    assert(deq(mat_get(&T,0,0), 1));
+    assert(deq(mat_get(&T,1,0), 2));
+    assert(deq(mat_get(&T,2,1), 6));
 
     mat_free(&A); mat_free(&B); mat_free(&C); mat_free(&D); mat_free(&T);
     return 0;
