@@ -3,7 +3,11 @@
 
 int main(void) {
     Matrix M;
-    assert(mat_create(&M, 2, 2) == 0);
+    int rc = mat_create(&M, 2, 2);
+    assert(rc == 0);
+    assert(M.data != NULL);
+    assert(M.rows == 2 && M.cols == 2);
+
     mat_set(&M, 0, 0, 10.0);
     mat_set(&M, 0, 1, 20.0);
     mat_set(&M, 1, 0, 30.0);
