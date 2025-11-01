@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.22)
+project(matrixlab C)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_EXTENSIONS OFF)
+
+if (MSVC)
+    add_compile_options(/W4)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# библиотека
+add_library(matrixlab STATIC
+        src/matrix.c
+        include/matrix.h
+        src/matrix.c
+        src/main.c
+)
+target_include_directories(matrixlab PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# демка
+add_executable(matrixlab_demo src/main.c)
+target_link_libraries(matrixlab_demo PRIVATE matrixlab)
+
+# тесты
+enable_testing()
+add_executable(test_matrix tests/test_matrix.c
+        tests/test_matrix.c)
+target_link_libraries(test_matrix PRIVATE matrixlab)
+add_test(NAME test_matrix COMMAND test_matrix)
