@@ -1,6 +1,5 @@
-# =============================================================================
-# matrixbox-c — v1.1.0 (v2) • 2025-11-04
-# =============================================================================
+# matrixbox-c — v2.0.0 (v2) • 2025-11-04
+
 # HIGHLIGHTS
 #   • New matrix multiplication: mat_mul  → C = A * B  (with shape checks)
 #   • In-place scalar multiply: mat_mul_scalar  → A *= k
@@ -13,8 +12,3 @@
 #
 # CI
 #   • GitHub Actions (Ubuntu); verified locally on Windows (MinGW)
-#
-# LINKS
-#   • Release: https://github.com/NotGoodAtC-wow/matrixbox-c/releases/tag/v1.1.0
-#   • Compare: https://github.com/NotGoodAtC-wow/matrixbox-c/compare/v1.0.0...v1.1.0
-# =============================================================================
