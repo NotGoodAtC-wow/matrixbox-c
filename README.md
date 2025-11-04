@@ -10,10 +10,11 @@ A minimal matrix library in **C99**. Built with **CMake**, tested with **CTest**
 
 ---
 
-## Features (v2.0.0)
+## Features (v3.0.0)
 - Core API: `mat_create`, `mat_free`, `mat_get`, `mat_set`, `mat_fill`
 - Operations: `mat_add`, `mat_sub`, `mat_transpose`, `mat_mul`
 - In-place ops: `mat_mul_scalar`
+- **Gaussian ops:** `mat_det` (determinant), `mat_rank` (rank) with partial pivoting
 - Defensive checks for `NULL`/bounds in accessors
 - Demo executable: `matrixlab_demo`
 - CI on GitHub Actions (Ubuntu); verified locally on Windows (MinGW)
@@ -36,7 +37,6 @@ ctest --test-dir build --output-on-failure
 ```
 
 ## Quick usage
-
 ```c
 #include "matrix.h"
 #include <stdio.h>
@@ -60,9 +60,16 @@ int main(void) {
     // multiplication example: (2x2)*(2x2) -> (2x2)
     Matrix M; mat_create(&M, 2, 2);
     mat_mul(&A, &B, &M);          // M = A * B
-
-    // in-place scalar multiply
     mat_mul_scalar(&M, 0.5);      // M *= 0.5
+
+    // Gaussian examples
+    double det = 0.0;
+    mat_det(&A, &det, 1e-9);      // determinant via Gaussian
+    printf("det(A) = %.1f\n", det);
+
+    size_t rk = 0;
+    mat_rank(&A, &rk, 1e-9);      // rank via pivot count
+    printf("rank(A) = %zu\n", rk);
 
     mat_free(&A); mat_free(&B); mat_free(&C); mat_free(&T); mat_free(&M);
     return 0;
@@ -83,19 +90,9 @@ int main(void) {
 | `int mat_transpose(const Matrix* A, Matrix* T)`            | `T = A^T` (shape `cols×rows`).                                          |
 | `int mat_mul(const Matrix* A, const Matrix* B, Matrix* C)` | `C = A * B` (A: `r×k`, B: `k×c`, C: `r×c`).                             |
 | `int mat_mul_scalar(Matrix* A, double k)`                  | In-place scalar multiply: `A *= k`.                                     |
-
-## Project layout
-
-```bash
-.
-├─ include/            # public API: matrix.h
-├─ src/                # implementation + demo
-├─ tests/              # CTest suites
-├─ .github/workflows/  # CI (cmake.yml)
-└─ CMakeLists.txt
-```
+| `int mat_det(const Matrix* A, double* out, double eps)`    | Determinant via Gaussian elimination with partial pivoting.             |
+| `int mat_rank(const Matrix* A, size_t* out, double eps)`   | Rank via number of pivots in row-echelon form.                          |
 
 ## Roadmap
 
-- v3: Gaussian elimination, `mat_det`, `mat_rank`
 - v4: Matrix I/O (read/write) and simple CLI
