@@ -51,3 +51,8 @@ add_executable(test_mul tests/test_mul.c
         tests/test_mul.c)
 target_link_libraries(test_mul PRIVATE matrixlab)
 add_test(NAME test_mul COMMAND test_mul)
+
+add_executable(test_gauss tests/test_gauss.c
+        tests/test_gauss.c)
+target_link_libraries(test_gauss PRIVATE matrixlab)
+add_test(NAME test_gauss COMMAND test_gauss)

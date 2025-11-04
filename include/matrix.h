@@ -31,4 +31,8 @@ int mat_transpose(const Matrix* A, Matrix* T);                   // T = A^T
 int mat_mul(const Matrix* A, const Matrix* B, Matrix* C);   // C = A * B
 int mat_mul_scalar(Matrix* A, double k);                     // A *= k
 
+/* v3: Gaussian-based ops */
+int mat_det(const Matrix* A, double* out, double eps);     // det(A) via Gaussian; eps ~ 1e-9
+int mat_rank(const Matrix* A, size_t* out, double eps);    // rank(A) via row-echelon; eps ~ 1e-9
+
 #endif

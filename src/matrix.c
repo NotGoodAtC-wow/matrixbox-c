@@ -106,3 +106,110 @@ int mat_mul_scalar(Matrix* A, double k) {
     }
     return 0;
 }
+
+/* ==== v3: Gaussian elimination helpers (internal) ==== */
+
+static double _dabs(double x) { return x < 0 ? -x : x; }
+
+static void _swap_rows(Matrix* M, size_t i, size_t j) {
+    if (i == j || !M || !_valid(M)) return;
+    const size_t n = M->cols;
+    for (size_t c = 0; c < n; ++c) {
+        double tmp = M->data[i * n + c];
+        M->data[i * n + c] = M->data[j * n + c];
+        M->data[j * n + c] = tmp;
+    }
+}
+
+/* In-place conversion to (row-)upper echelon form with partial pivoting.
+   Returns number of pivots; writes swap parity (0 even, 1 odd) if parity!=NULL. */
+static int _to_upper_echelon(Matrix* R, double eps, int* parity) {
+    if (!_valid(R)) { if (parity) *parity = 0; return 0; }
+    size_t r = R->rows, c = R->cols;
+    size_t row = 0, col = 0;
+    int pivots = 0;
+    int swaps = 0;
+
+    while (row < r && col < c) {
+        /* choose pivot row by max |value| in current column */
+        size_t piv = row;
+        double best = _dabs(R->data[row * c + col]);
+        for (size_t i = row + 1; i < r; ++i) {
+            double v = _dabs(R->data[i * c + col]);
+            if (v > best) { best = v; piv = i; }
+        }
+        if (best <= eps) { /* column is (near) zero -> skip column */
+            ++col;
+            continue;
+        }
+        if (piv != row) { _swap_rows(R, piv, row); swaps ^= 1; }
+
+        /* eliminate below */
+        double pivot = R->data[row * c + col];
+        for (size_t i = row + 1; i < r; ++i) {
+            double a = R->data[i * c + col];
+            if (_dabs(a) <= eps) continue;
+            double f = a / pivot;
+            for (size_t j = col; j < c; ++j) {
+                R->data[i * c + j] -= f * R->data[row * c + j];
+            }
+        }
+        ++row; ++col; ++pivots;
+    }
+    if (parity) *parity = swaps & 1;
+    return pivots;
+}
+
+/* ==== public v3 API ==== */
+
+int mat_det(const Matrix* A, double* out, double eps) {
+    if (!out) return -1;
+    *out = 0.0;
+    if (!_valid(A)) return -1;
+    if (A->rows != A->cols) return -2; /* not square */
+
+    size_t n = A->rows;
+    if (n == 0) { *out = 1.0; return 0; } /* det of 0x0 = 1 */
+
+    /* make a working copy */
+    Matrix R;
+    if (mat_create(&R, A->rows, A->cols) != 0) return -1;
+    for (size_t i = 0; i < n * n; ++i) R.data[i] = A->data[i];
+
+    int parity = 0;
+    int pivots = _to_upper_echelon(&R, eps, &parity);
+
+    if (pivots < (int)n) { /* singular */
+        *out = 0.0;
+        mat_free(&R);
+        return 0;
+    }
+
+    double prod = 1.0;
+    for (size_t i = 0; i < n; ++i) {
+        prod *= R.data[i * n + i];
+    }
+    if (parity) prod = -prod;
+
+    *out = prod;
+    mat_free(&R);
+    return 0;
+}
+
+int mat_rank(const Matrix* A, size_t* out, double eps) {
+    if (!out) return -1;
+    *out = 0;
+    if (!_valid(A)) return -1;
+
+    Matrix R;
+    if (mat_create(&R, A->rows, A->cols) != 0) return -1;
+    /* copy */
+    for (size_t i = 0, n = A->rows * A->cols; i < n; ++i) R.data[i] = A->data[i];
+
+    int parity_dummy = 0;
+    int pivots = _to_upper_echelon(&R, eps, &parity_dummy);
+    *out = (pivots < 0) ? 0u : (size_t)pivots;
+
+    mat_free(&R);
+    return 0;
+}
