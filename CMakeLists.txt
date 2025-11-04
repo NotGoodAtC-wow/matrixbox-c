@@ -47,3 +47,7 @@ endif()
 # optimized for C99
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_EXTENSIONS OFF)
+add_executable(test_mul tests/test_mul.c
+        tests/test_mul.c)
+target_link_libraries(test_mul PRIVATE matrixlab)
+add_test(NAME test_mul COMMAND test_mul)

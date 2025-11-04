@@ -73,3 +73,36 @@ int mat_transpose(const Matrix* A, Matrix* T) {
             T->data[j * T->cols + i] = A->data[i * A->cols + j];
     return 0;
 }
+
+/* matrix multiplication: C = A * B
+   Shapes: A (r x k), B (k x c) => C (r x c)
+   Returns: 0 ok; -1 invalid args; -2 incompatible inner dims; -3 wrong C shape */
+int mat_mul(const Matrix* A, const Matrix* B, Matrix* C) {
+    if (!_valid(A) || !_valid(B) || !_valid(C)) return -1;
+    if (A->cols != B->rows) return -2;
+    if (C->rows != A->rows || C->cols != B->cols) return -3;
+
+    const size_t r = A->rows, k = A->cols, c = B->cols;
+
+    for (size_t i = 0; i < r; ++i) {
+        for (size_t j = 0; j < c; ++j) {
+            double s = 0.0;
+            for (size_t t = 0; t < k; ++t) {
+                s += A->data[i * A->cols + t] * B->data[t * B->cols + j];
+            }
+            C->data[i * C->cols + j] = s;
+        }
+    }
+    return 0;
+}
+
+/* in-place scalar multiply: A *= k
+   Returns: 0 ok; -1 invalid args */
+int mat_mul_scalar(Matrix* A, double k) {
+    if (!_valid(A)) return -1;
+    const size_t n = A->rows * A->cols;
+    for (size_t idx = 0; idx < n; ++idx) {
+        A->data[idx] *= k;
+    }
+    return 0;
+}
