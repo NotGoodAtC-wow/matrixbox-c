@@ -1,5 +1,6 @@
 # matrixbox-c
 
+[![Build](https://github.com/NotGoodAtC-wow/matrixbox-c/actions/workflows/cmake.yml/badge.svg)](https://github.com/NotGoodAtC-wow/matrixbox-c/actions/workflows/cmake.yml)
 ![License](https://img.shields.io/badge/license-MIT-informational)
 ![Language](https://img.shields.io/badge/language-C99-blue)
 ![Release](https://img.shields.io/github/v/release/NotGoodAtC-wow/matrixbox-c?display_name=tag)
