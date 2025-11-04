@@ -1,38 +1,35 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include <stddef.h>
+#include <stddef.h>  // size_t
 
+// Row-major matrix
 typedef struct {
     size_t rows;
     size_t cols;
-    double* data;   // row-major: a[i,j] = data[i*cols + j]
+    double* data;
 } Matrix;
 
-/* создание пустой матрицы rows×cols, память под элементы = 0
-   вернёт 0 при успехе, не 0 при ошибке */
-int mat_create(Matrix* m, size_t rows, size_t cols);
-
-/* освободить память */
+/* constructors / destructors */
+int  mat_create(Matrix* m, size_t rows, size_t cols);   // 0 ok; -1 bad args; -2 alloc fail
 void mat_free(Matrix* m);
 
-/* получить элемент (без проверок ради скорости) */
-double mat_get(const Matrix* m, size_t i, size_t j);
+/* accessors */
+double mat_get(const Matrix* m, size_t i, size_t j);    // guarded
+void   mat_set(Matrix* m,       size_t i, size_t j, double v); // guarded
+void   mat_fill(Matrix* m, double v);
 
-/* установить элемент */
-void mat_set(Matrix* m, size_t i, size_t j, double v);
+/* v1 ops */
+int mat_add(const Matrix* A, const Matrix* B, Matrix* C);      // C = A + B
+int mat_sub(const Matrix* A, const Matrix* B, Matrix* C);      // C = A - B
+int mat_transpose(const Matrix* A, Matrix* T);                 // T = A^T
 
-/* заполнить константой */
-void mat_fill(Matrix* m, double v);
+/* v2 ops */
+int mat_mul(const Matrix* A, const Matrix* B, Matrix* C);      // C = A * B
+int mat_mul_scalar(Matrix* A, double k);                       // A *= k (in-place)
 
-int mat_add(const Matrix* A, const Matrix* B, Matrix* C);        // C = A + B
-int mat_sub(const Matrix* A, const Matrix* B, Matrix* C);        // C = A - B
-int mat_transpose(const Matrix* A, Matrix* T);                   // T = A^T
-int mat_mul(const Matrix* A, const Matrix* B, Matrix* C);   // C = A * B
-int mat_mul_scalar(Matrix* A, double k);                     // A *= k
+/* v3 Gaussian */
+int mat_det (const Matrix* A, double* out, double eps);        // 0 ok; -2 non-square
+int mat_rank(const Matrix* A, size_t* out, double eps);        // 0 ok
 
-/* v3: Gaussian-based ops */
-int mat_det(const Matrix* A, double* out, double eps);     // det(A) via Gaussian; eps ~ 1e-9
-int mat_rank(const Matrix* A, size_t* out, double eps);    // rank(A) via row-echelon; eps ~ 1e-9
-
-#endif
+#endif /* MATRIX_H */
